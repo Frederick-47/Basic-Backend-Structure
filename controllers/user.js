@@ -1,34 +1,78 @@
-const {response} = require('express')
+const {response} = require('express');
+const bcrypt = require('bcryptjs')
+const Usuario = require('../models/usuario');
 
-const usersGet = (req, res = response) => {
+const usersGet = async(req, res = response) => {
 
-    const query = req.query;
+
+    const {limite = 10, desde = 0} = req.query;
+    const query = {extado: true}
+    
+
+    const [total, usuarios]  = await Promise.all([
+        Usuario.count(query),
+        Usuario.find(query)
+            .skip(Number(desde))
+            .limit(Number(limite))
+    ])
+
     res.json({
-        mgs: 'get API - controlador',
-        query
+        total,
+        usuarios
     });
 }
 
-const userPut = (req, res) => {
+const userPut = async(req, res) => {
     const {id} = req.params;
+    const {_id, password, google,correo, ...resto} = req.body;
+
+    //  TODO validar contra base de datos
+    if(password){
+        // Encriptar la contraseña
+        const salt = bcrypt.genSaltSync();
+        resto.password = bcrypt.hashSync(password, salt);
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, resto);
+
+
     res.json({
-        mgs: 'PUT API -controlador',
-        id
+        usuario
     });
 }
 
-const userPost = (req, res) => {
-    const body = req.body;
+const userPost = async(req, res) => {
+
+    
+
+    const {nombre, correo, password, role} = req.body;
+    const usuario = new Usuario({nombre, correo, password, role});
+
+    //  Verify if the eamil exist 
+
+    
+
+    // Encrypt password
+    const salt = bcrypt.genSaltSync();
+    usuario.password = bcrypt.hashSync(password, salt);
+
+    // Save on DB
+    await usuario.save();
+
     res.json({
-        msg: "Post API -usersPost",
-        body
+        usuario
     });
 }
 
-const userDelete = (req, res) => {
-    res.json({
-        mgs: 'delete API -controlador'
-    });
+const userDelete = async(req, res) => {
+
+    const {id} = req.params;
+
+    // const usuario = await Usuario.findByIdAndDelete(id);
+
+    const usuario = await Usuario.findByIdAndUpdate(id, {estado: false})
+
+    res.json(usuario);
 }
 
 const userPatch = (req, res) => {
