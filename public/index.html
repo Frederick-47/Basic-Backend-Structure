@@ -35,9 +35,7 @@
 
         console.log(window.location.hostname.includes('localhost'))
 
-        var url = (window.location.hostname.includes('localhost'))
-                    ? 'http://localhost:8080/api/auth/google'
-                    : 'https://node-jest.herokuapp.com/api/auth/google'
+        var url = 'https://node-jest.herokuapp.com/api/auth/google';
 
         function handleCredentialResponse(response) {
            
