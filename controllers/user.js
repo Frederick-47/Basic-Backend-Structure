@@ -6,7 +6,7 @@ const usersGet = async(req, res = response) => {
 
 
     const {limite = 10, desde = 0} = req.query;
-    const query = {extado: true}
+    const query = {estado: true}
     
 
     const [total, usuarios]  = await Promise.all([
