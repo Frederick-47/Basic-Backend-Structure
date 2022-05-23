@@ -17,13 +17,11 @@ const obtenerProductos = async(req, res) => {
 
 const obtenerProductoById = async(req, res) => {
 
-    const {id} = req.params
+    const {id} = req.params;
 
     const nombre = await Producto.findById(id)
                             .populate('usuario', 'nombre')
                             .populate('categoria', 'nombre');
-                            
-
     res.status(200).json(nombre)
 
 }
@@ -70,16 +68,19 @@ const crearProducto = async(req, res) => {
 const actualizarProducto = async(req, res) => {
 
     const {id} = req.params;
-    const newName = req.body.nombre.toUpperCase()
+    const {estado, usuario, ...data} = req.body;
 
-    if(!id & !newName){
+    data.nombre = data.nombre.toUpperCase();
+    data.usuario = req.usuario._id;
+
+    if(!id & !data.nombre){
         throw Error("no ha introducido correctamente el id ni el nombre")
     }
 
 
-    const user = await Producto.findByIdAndUpdate(id, {nombre: newName});
+    const producto = await Producto.findByIdAndUpdate(id, data, {new: true});
 
-    res.status(201).json(user);
+    res.status(201).json(producto);
 }
 
 

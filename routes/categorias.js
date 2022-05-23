@@ -20,8 +20,6 @@ router.get('/:id', [
 
 //  Crear categoria - privado - cualquier persona con un token válido
 router.post('/', [validarJWT,
-    check('id', 'esto no es un id válido').isMongoId(),
-    check('id').custom(validarIds),
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     validarCampos
 ],crearCategoria);
